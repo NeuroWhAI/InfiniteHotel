@@ -25,6 +25,7 @@ protected:
 protected:
 	Gene m_gene;
 	double m_energy;
+	double m_usedEnergy;
 
 
 protected:
@@ -53,6 +54,11 @@ public:
 	const Gene& getGene() const;
 	double getEnergy() const;
 	void addEnergy(double energy);
+	double getUsedEnergy() const;
+
+
+protected:
+	void useEnergy(double energy);
 
 
 protected:
@@ -64,10 +70,10 @@ protected:
 	virtual bool whenReadData(char& outData) override;
 	virtual bool whenJumpIfZero() override;
 	virtual bool whenJumpIfNotZero() override;
-	virtual bool whenWriteRegister() override;
-	virtual bool whenReadRegister() override;
-	virtual bool whenWriteChannel() override;
-	virtual bool whenReadChannel() override;
+	virtual bool whenWriteRegister(char delta) override;
+	virtual bool whenReadRegister(char delta) override;
+	virtual bool whenWriteChannel(char delta) override;
+	virtual bool whenReadChannel(char delta) override;
 	virtual bool whenMoveTargetLeft() override;
 	virtual bool whenMoveTargetRight() override;
 	virtual bool whenVote(char how) override;

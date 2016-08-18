@@ -30,7 +30,8 @@ protected:
 
 
 protected:
-	double m_totalEnergy;
+	double m_worldEnergy;
+	double m_lockedEnergy;
 	std::vector<std::unique_ptr<Unit>> m_roomList;
 	size_t m_epoch;
 	size_t m_time, m_endTime;
@@ -52,6 +53,7 @@ protected:
 	void updateRanking();
 	void updateLove();
 	void updateEpoch();
+	void updateEnergy();
 
 
 protected:

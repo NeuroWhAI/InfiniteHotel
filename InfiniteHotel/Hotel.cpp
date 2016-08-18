@@ -18,7 +18,8 @@ Hotel::Hotel()
 
 	, m_hotelStat(std::make_unique<HotelStat>())
 	
-	, m_totalEnergy(0)
+	, m_worldEnergy(0)
+	, m_lockedEnergy(0)
 	, m_epoch(1)
 	, m_time(0), m_endTime(4096)
 {
@@ -34,7 +35,8 @@ void Hotel::initialize(size_t firstUnitCount, size_t timePerEpoch)
 {
 	m_hotelStat->reset();
 
-	m_totalEnergy = 0.0;
+	m_worldEnergy = 0.0;
+	m_lockedEnergy = 0.0;
 	m_roomList.clear();
 	m_epoch = 1;
 	m_time = 0;
@@ -46,7 +48,7 @@ void Hotel::initialize(size_t firstUnitCount, size_t timePerEpoch)
 			2, 6, 13, 16, 7, 12, 15, 0, 2, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7, 6, 7
 		};
 
-		m_totalEnergy += testGene.getEnergy();
+		m_worldEnergy += testGene.getEnergy();
 
 		createUnit(testGene);
 	}
@@ -62,7 +64,7 @@ void Hotel::initialize(size_t firstUnitCount, size_t timePerEpoch)
 		gene.initializeRandomly(m_randEngine, Interpreter::CMD_COUNT);
 		
 		// 초기 에너지 채움.
-		m_totalEnergy += gene.getEnergy();
+		m_worldEnergy += gene.getEnergy();
 
 		// 유닛 생성
 		createUnit(gene);
@@ -98,6 +100,10 @@ void Hotel::update()
 
 	// 사랑 갱신
 	updateLove();
+
+
+	// 월드 에너지 갱신
+	updateEnergy();
 }
 
 //###########################################################################
@@ -121,7 +127,7 @@ void Hotel::updateState()
 		if (room->isDead())
 		{
 			// 에너지 환원
-			m_totalEnergy += room->getGene().getEnergy();
+			m_lockedEnergy += room->getEnergy() + room->getUsedEnergy();
 
 			// 유닛 삭제
 			room = nullptr;
@@ -207,13 +213,11 @@ void Hotel::updateLove()
 
 			// 점수가 높을수록 선택될 확률이 높게 함.
 			std::normal_distribution<> indexDist{
-				0, static_cast<double>(m_scoreRanking.size())
+				0, static_cast<double>(m_scoreRanking.size() / 2)
 			};
 
 			double normalIndex = std::abs(indexDist(m_randEngine));
-			if (normalIndex >= m_scoreRanking.size())
-				normalIndex = 0;
-			const size_t index = static_cast<size_t>(normalIndex);
+			const size_t index = static_cast<size_t>(normalIndex) % m_scoreRanking.size();
 
 			const size_t loverIndex = m_scoreRanking[index];
 			Unit* const lover = m_roomList[loverIndex].get();
@@ -255,7 +259,7 @@ void Hotel::updateLove()
 
 				// 월드 에너지가 충분하면 유닛을 생성하고
 				// 부족하면 중단
-				if (m_totalEnergy >= needFromWorld)
+				if (m_worldEnergy >= needFromWorld)
 				{
 					// 부모의 에너지가 충분하면
 					if (lover->getEnergy() > needFromParent
@@ -266,7 +270,7 @@ void Hotel::updateLove()
 						lovedUnit->addEnergy(-needFromParent);
 
 						// 월드 에너지 소모
-						m_totalEnergy -= needFromWorld;
+						m_worldEnergy -= needFromWorld;
 
 						if (wasMutated)
 						{
@@ -295,6 +299,18 @@ void Hotel::updateEpoch()
 {
 	// 세대 증가
 	++m_epoch;
+}
+
+
+void Hotel::updateEnergy()
+{
+	const double returnSpeed = std::max(64.0, m_scoreRanking.size() * 1.0);
+
+	if (m_lockedEnergy >= returnSpeed)
+	{
+		m_lockedEnergy -= returnSpeed;
+		m_worldEnergy += returnSpeed;
+	}
 }
 
 //###########################################################################

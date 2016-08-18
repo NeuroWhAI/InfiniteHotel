@@ -243,10 +243,11 @@ bool Interpreter::writeRegister()
 {
 	++m_head;
 
+	auto oldReg = m_register;
 	m_register = m_memory[m_ptr];
 
 
-	return m_listener.whenWriteRegister();
+	return m_listener.whenWriteRegister(m_register - oldReg);
 }
 
 
@@ -254,10 +255,11 @@ bool Interpreter::readRegister()
 {
 	++m_head;
 
+	auto oldMem = m_memory[m_ptr];
 	m_memory[m_ptr] = m_register;
 
 
-	return m_listener.whenReadRegister();
+	return m_listener.whenReadRegister(m_register - oldMem);
 }
 
 
@@ -265,10 +267,11 @@ bool Interpreter::writeChannel()
 {
 	++m_head;
 
+	auto oldChannel = m_channel;
 	m_channel = m_memory[m_ptr];
 
 
-	return m_listener.whenWriteChannel();
+	return m_listener.whenWriteChannel(m_channel - oldChannel);
 }
 
 
@@ -276,10 +279,11 @@ bool Interpreter::readChannel()
 {
 	++m_head;
 
+	auto oldMem = m_memory[m_ptr];
 	m_memory[m_ptr] = m_channel;
 
 
-	return m_listener.whenReadChannel();
+	return m_listener.whenReadChannel(m_channel - oldMem);
 }
 
 

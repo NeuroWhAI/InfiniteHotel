@@ -47,7 +47,7 @@ const std::vector<char>& Gene::getCode() const
 
 double Gene::getEnergy() const
 {
-	return m_code.size() * 32.0;
+	return m_code.size() * 64.0;
 }
 
 //###########################################################################

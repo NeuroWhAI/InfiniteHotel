@@ -1,6 +1,7 @@
 #include "Unit.h"
 
 #include <numeric>
+#include <algorithm>
 
 
 
@@ -11,6 +12,7 @@ Unit::Unit(const Gene& gene, const size_t myIndex,
 	
 	, m_gene(gene)
 	, m_energy(gene.getEnergy())
+	, m_usedEnergy(0)
 
 	, m_memory(gene.getCode().size(), 0)
 
@@ -65,10 +67,14 @@ void Unit::updateCommunication()
 		}
 
 		targetUnit->input(channel, m_outputList[channel]);
+		m_outputList[channel] = 0;
 
 
 		// 평가
-		targetUnit->vote(m_targetScore);
+		if (m_targetUnitIndex != m_myIndex)
+		{
+			targetUnit->vote(m_targetScore);
+		}
 		m_targetScore = 0;
 	}
 }
@@ -92,11 +98,25 @@ void Unit::addEnergy(double energy)
 	m_energy += energy;
 }
 
+
+double Unit::getUsedEnergy() const
+{
+	return m_usedEnergy;
+}
+
+//###########################################################################
+
+void Unit::useEnergy(double energy)
+{
+	m_energy -= energy;
+	m_usedEnergy += energy;
+}
+
 //###########################################################################
 
 bool Unit::whenIncreasePtr()
 {
-	m_energy -= 0.2;
+	useEnergy(0.2);
 
 
 	return true;
@@ -105,7 +125,7 @@ bool Unit::whenIncreasePtr()
 
 bool Unit::whenDecreasePtr()
 {
-	m_energy -= 0.2;
+	useEnergy(0.2);
 
 
 	return true;
@@ -114,7 +134,7 @@ bool Unit::whenDecreasePtr()
 
 bool Unit::whenIncreaseData()
 {
-	m_energy -= 1;
+	useEnergy(1.0); // 1에서 변경하지 말것.
 
 
 	return true;
@@ -123,7 +143,7 @@ bool Unit::whenIncreaseData()
 
 bool Unit::whenDecreaseData()
 {
-	m_energy -= 1;
+	useEnergy(1.0); // 1에서 변경하지 말것.
 
 
 	return true;
@@ -132,7 +152,7 @@ bool Unit::whenDecreaseData()
 
 bool Unit::whenWriteData(char data)
 {
-	m_energy -= 4;
+	useEnergy(4.0);
 
 
 	size_t channel = static_cast<size_t>(std::abs(m_interpreter->getChannel()));
@@ -147,6 +167,7 @@ bool Unit::whenWriteData(char data)
 
 
 	// 쓴 데이터만큼 에너지를 추가 소모
+	// useEnergy를 사용하지 않는 이유는 이 값(에너지)이 외부로 나갈 예정이라서.
 	m_energy -= std::abs(data);
 
 
@@ -156,7 +177,12 @@ bool Unit::whenWriteData(char data)
 
 bool Unit::whenReadData(char& outData)
 {
-	m_energy -= 4;
+	useEnergy(4.0);
+
+
+	// NOTE: outData의 이전 값을 저장하지 않고
+	// 에너지 손실의 가능성을 그대로 두는건
+	// 공격의 가능성으로 사용되길 원하기 때문임.
 
 
 	size_t channel = static_cast<size_t>(std::abs(m_interpreter->getChannel()));
@@ -164,6 +190,7 @@ bool Unit::whenReadData(char& outData)
 	if (channel < m_inputList.size())
 	{
 		outData = m_inputList[channel];
+		m_inputList[channel] = 0;
 
 
 		// 데이터를 에너지로서 흡수
@@ -181,7 +208,7 @@ bool Unit::whenReadData(char& outData)
 
 bool Unit::whenJumpIfZero()
 {
-	m_energy -= 0.2;
+	useEnergy(0.2);
 
 
 	return true;
@@ -190,43 +217,43 @@ bool Unit::whenJumpIfZero()
 
 bool Unit::whenJumpIfNotZero()
 {
-	m_energy -= 0.2;
+	useEnergy(0.2);
 
 
 	return true;
 }
 
 
-bool Unit::whenWriteRegister()
+bool Unit::whenWriteRegister(char delta)
 {
-	m_energy -= 0.4;
+	useEnergy(0.4 + std::abs(delta));
 
 
 	return true;
 }
 
 
-bool Unit::whenReadRegister()
+bool Unit::whenReadRegister(char delta)
 {
-	m_energy -= 0.4;
+	useEnergy(0.4 + std::abs(delta));
 
 
 	return true;
 }
 
 
-bool Unit::whenWriteChannel()
+bool Unit::whenWriteChannel(char delta)
 {
-	m_energy -= 0.4;
+	useEnergy(0.4 + std::abs(delta));
 
 
 	return true;
 }
 
 
-bool Unit::whenReadChannel()
+bool Unit::whenReadChannel(char delta)
 {
-	m_energy -= 0.4;
+	useEnergy(0.4 + std::abs(delta));
 
 
 	return true;
@@ -235,7 +262,7 @@ bool Unit::whenReadChannel()
 
 bool Unit::whenMoveTargetLeft()
 {
-	m_energy -= 8;
+	useEnergy(8.0);
 
 
 	if (m_targetUnitIndex > 0)
@@ -250,7 +277,7 @@ bool Unit::whenMoveTargetLeft()
 
 bool Unit::whenMoveTargetRight()
 {
-	m_energy -= 8;
+	useEnergy(8.0);
 
 
 	++m_targetUnitIndex;
@@ -262,7 +289,7 @@ bool Unit::whenMoveTargetRight()
 
 bool Unit::whenVote(char how)
 {
-	m_energy -= std::abs(how);
+	useEnergy(std::abs(how));
 
 
 	m_targetScore += how;
@@ -274,7 +301,7 @@ bool Unit::whenVote(char how)
 
 bool Unit::whenLove()
 {
-	m_energy -= 16;
+	useEnergy(16.0);
 
 
 	m_loveUnitIndex = m_targetUnitIndex;
@@ -286,7 +313,10 @@ bool Unit::whenLove()
 
 bool Unit::whenReadTargetEnergy(char& outData)
 {
-	m_energy -= 2;
+	useEnergy(2.0);
+
+
+	const char oldData = outData;
 
 
 	outData = 0;
@@ -323,13 +353,19 @@ bool Unit::whenReadTargetEnergy(char& outData)
 	}
 
 
+	useEnergy(std::abs(oldData - outData));
+
+
 	return true;
 }
 
 
 bool Unit::whenReadTargetScore(char& outData)
 {
-	m_energy -= 2;
+	useEnergy(2.0);
+
+
+	const char oldData = outData;
 
 
 	outData = 0;
@@ -368,6 +404,9 @@ bool Unit::whenReadTargetScore(char& outData)
 			}
 		}
 	}
+	
+
+	useEnergy(std::abs(oldData - outData));
 
 
 	return true;
