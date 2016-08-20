@@ -1,6 +1,7 @@
 #include "Gene.h"
 
 #include <algorithm>
+#include <numeric>
 
 
 
@@ -24,7 +25,7 @@ void Gene::initializeRandomly(std::mt19937& engine, int cmdSetCount)
 	m_code.clear();
 
 
-	std::uniform_int_distribution<size_t> sizeDist{ 16, 512 };
+	std::uniform_int_distribution<size_t> sizeDist{ 8, 512 };
 	std::uniform_int_distribution<> cmdDist{ 0, cmdSetCount - 1 };
 
 
@@ -38,6 +39,12 @@ void Gene::initializeRandomly(std::mt19937& engine, int cmdSetCount)
 }
 
 //###########################################################################
+
+size_t Gene::getLength() const
+{
+	return m_code.size();
+}
+
 
 const std::vector<char>& Gene::getCode() const
 {
@@ -57,10 +64,12 @@ void Gene::combine(const Gene& other, std::mt19937& engine)
 	size_t minLength = std::min(other.getCode().size(), m_code.size());
 
 
+	std::uniform_int_distribution<> flagDist{ 0, 1 };
+
+
 	if (minLength > 0)
 	{
 		std::uniform_int_distribution<size_t> jumpDist{ 1, minLength };
-		std::uniform_int_distribution<> flagDist{ 0, 1 };
 
 
 		const Gene* current = (flagDist(engine) == 0) ? this : &other;
@@ -88,7 +97,8 @@ void Gene::combine(const Gene& other, std::mt19937& engine)
 	}
 
 
-	if (m_code.size() < other.getCode().size())
+	if (m_code.size() < other.getCode().size()
+		&& flagDist(engine) == 0)
 	{
 		m_code.insert(m_code.end(), other.getCode().begin() + minLength,
 			other.getCode().end());
@@ -160,5 +170,43 @@ void Gene::mutate(std::mt19937& engine, int cmdSetCount)
 			}
 		}
 	}
+}
+
+//###########################################################################
+
+bool Gene::operator== (const Gene& right) const
+{
+	auto& otherCode = right.getCode();
+
+	if (m_code.size() == otherCode.size())
+	{
+		const size_t length = m_code.size();
+
+		for (size_t i = 0; i < length; ++i)
+		{
+			if (m_code[i] != otherCode[i])
+				return false;
+		}
+
+
+		return true;
+	}
+
+
+	return false;
+}
+
+
+bool Gene::operator!= (const Gene& right) const
+{
+	return !this->operator==(right);
+}
+
+//###########################################################################
+
+int Gene::getSum() const
+{
+	return std::accumulate<decltype(m_code.begin()), int>
+		(m_code.begin(), m_code.end(), 0);
 }
 

@@ -35,6 +35,7 @@ void Hotel::initialize(size_t firstUnitCount, size_t timePerEpoch)
 {
 	m_hotelStat->reset();
 
+
 	m_worldEnergy = 0.0;
 	m_lockedEnergy = 0.0;
 	m_roomList.clear();
@@ -42,6 +43,8 @@ void Hotel::initialize(size_t firstUnitCount, size_t timePerEpoch)
 	m_time = 0;
 	m_endTime = timePerEpoch;
 
+
+	// 임의로 만든 기본적으로 생존 가능한 유전자 삽입.
 	for (size_t i = 0; i < 3; ++i)
 	{
 		Gene testGene = {
@@ -69,6 +72,9 @@ void Hotel::initialize(size_t firstUnitCount, size_t timePerEpoch)
 		// 유닛 생성
 		createUnit(gene);
 	}
+
+
+	m_worldEnergy *= 2.0;
 
 
 	updateRanking();
@@ -126,14 +132,15 @@ void Hotel::updateState()
 
 		if (room->isDead())
 		{
+			m_hotelStat->addDeath();
+			m_hotelStat->decreaseGeneCount(room->getGene());
+
+
 			// 에너지 환원
 			m_lockedEnergy += room->getEnergy() + room->getUsedEnergy();
 
 			// 유닛 삭제
 			room = nullptr;
-
-
-			m_hotelStat->addDeath();
 		}
 		else
 		{
@@ -318,6 +325,7 @@ void Hotel::updateEnergy()
 size_t Hotel::createUnit(const Gene& gene)
 {
 	m_hotelStat->addBirth();
+	m_hotelStat->increaseGeneCount(gene);
 
 
 	const size_t roomCount = m_roomList.size();

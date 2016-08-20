@@ -22,6 +22,9 @@ int main()
 	window->setSceneManager(sceneManager);
 
 
+	bool bDraw = true;
+
+
 	while (window->isRunning())
 	{
 		caTouch->update();
@@ -32,8 +35,17 @@ int main()
 			window->exit();
 
 
+		if (caKeyboard->isKeyDown(caSys::Keys::Tab))
+		{
+			bDraw = !bDraw;
+		}
+
+
 		window->update();
-		window->draw(caDraw::Color(230, 230, 230));
+		if (bDraw)
+		{
+			window->draw(caDraw::Color(230, 230, 230));
+		}
 	}
 
 

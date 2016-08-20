@@ -1,8 +1,19 @@
 #pragma once
 
 
+#include <unordered_map>
+
+#include "Gene.h"
+
+
+
+
 class HotelStat
 {
+private:
+	using GeneCountMap = std::unordered_map<Gene, size_t, Gene::Hasher>;
+
+
 public:
 	HotelStat();
 
@@ -16,6 +27,7 @@ protected:
 	double m_maxUnitScore;
 	double m_minUnitScore;
 	size_t m_mutationCount;
+	GeneCountMap m_geneCount;
 
 
 public:
@@ -37,5 +49,8 @@ public:
 	double getMinUnitScore() const;
 	void addMutationCount(size_t delta = 1);
 	size_t getMutationCount() const;
+	void increaseGeneCount(const Gene& gene);
+	void decreaseGeneCount(const Gene& gene);
+	const GeneCountMap& getGeneCountMap() const;
 };
 

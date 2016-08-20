@@ -10,6 +10,17 @@
 class Gene
 {
 public:
+	class Hasher
+	{
+	public:
+		size_t operator() (const Gene& gene) const
+		{
+			return std::hash<int>()(gene.getSum());
+		}
+	};
+
+
+public:
 	Gene();
 	Gene(const std::initializer_list<char>& list);
 
@@ -23,6 +34,7 @@ public:
 
 
 public:
+	size_t getLength() const;
 	const std::vector<char>& getCode() const;
 	double getEnergy() const;
 
@@ -30,5 +42,14 @@ public:
 public:
 	void combine(const Gene& other, std::mt19937& engine);
 	void mutate(std::mt19937& engine, int cmdSetCount);
+
+
+public:
+	bool operator== (const Gene& right) const;
+	bool operator!= (const Gene& right) const;
+
+
+protected:
+	int getSum() const;
 };
 

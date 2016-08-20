@@ -63,6 +63,20 @@ void DrawableHotel::onDraw(Graphics& g, const Transform& parentTransform)
 	textArtist->drawString("Mutation: " + std::to_string(m_hotelStat->getMutationCount()),
 		8, 8 + 20 * pos++, caDraw::Color::Gray);
 
+	const auto& geneCountMap = m_hotelStat->getGeneCountMap();
+	textArtist->drawString("Gene Type: " + std::to_string(geneCountMap.size()),
+		8, 8 + 20 * pos++, caDraw::Color::Gray);
+	textArtist->drawString("Length: Count",
+		64, 8 + 20 * pos++, caDraw::Color::Gray);
+	for (auto& geneStats : geneCountMap)
+	{
+		auto& gene = geneStats.first;
+		auto count = geneStats.second;
+
+		textArtist->drawString(std::to_string(gene.getLength()) + ": " + std::to_string(count),
+			64, 8 + 20 * pos++, caDraw::Color::Gray);
+	}
+
 	textArtist->endDrawString();
 }
 

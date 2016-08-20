@@ -123,3 +123,40 @@ size_t HotelStat::getMutationCount() const
 	return m_mutationCount;
 }
 
+
+void HotelStat::increaseGeneCount(const Gene& gene)
+{
+	auto it = m_geneCount.find(gene);
+
+	if (it == m_geneCount.end())
+	{
+		m_geneCount.insert(std::make_pair(gene, 1));
+	}
+	else
+	{
+		++it->second;
+	}
+}
+
+
+void HotelStat::decreaseGeneCount(const Gene& gene)
+{
+	auto it = m_geneCount.find(gene);
+
+	if (it != m_geneCount.end())
+	{
+		--it->second;
+
+		if (it->second <= 0)
+		{
+			m_geneCount.erase(it);
+		}
+	}
+}
+
+
+auto HotelStat::getGeneCountMap() const -> const GeneCountMap&
+{
+	return m_geneCount;
+}
+

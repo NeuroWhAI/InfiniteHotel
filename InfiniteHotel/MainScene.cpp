@@ -6,8 +6,7 @@
 
 
 MainScene::MainScene()
-	: m_bDraw(true)
-	, m_camera(PointF(0, 20))
+	: m_camera(PointF(0, 20))
 	, m_hotel(std::make_unique<DrawableHotel>())
 {
 
@@ -59,11 +58,6 @@ void MainScene::onUpdate(caDraw::Window& owner)
 		reserveNextScene(nullptr);
 	}
 
-	if (caKeyboard->isKeyDown(caSys::Keys::Tab))
-	{
-		m_bDraw = !m_bDraw;
-	}
-
 	if (caKeyboard->isKeyPressed(caSys::Keys::Up))
 	{
 		m_camera.move(0, 8);
@@ -94,14 +88,11 @@ void MainScene::onUpdate(caDraw::Window& owner)
 
 void MainScene::onDrawBack(caDraw::Graphics& g)
 {
-	if (m_bDraw)
-	{
-		auto cam = m_panel->transform;
-		cam.position += m_camera;
+	auto cam = m_panel->transform;
+	cam.position += m_camera;
 
 
-		m_hotel->draw(g, cam);
-	}
+	m_hotel->draw(g, cam);
 }
 
 

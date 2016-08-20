@@ -31,7 +31,6 @@ protected:
 
 
 protected:
-	bool m_bDraw;
 	PointF m_camera;
 	std::unique_ptr<DrawableHotel> m_hotel;
 
