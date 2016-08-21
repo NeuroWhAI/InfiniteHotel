@@ -1,5 +1,7 @@
 #include "DrawableHotel.h"
 
+#include <sstream>
+
 #include "HotelStat.h"
 #include "Unit.h"
 #include "Gene.h"
@@ -8,6 +10,7 @@
 
 
 DrawableHotel::DrawableHotel()
+	: m_bShowExtinctGene(false)
 {
 
 }
@@ -63,18 +66,31 @@ void DrawableHotel::onDraw(Graphics& g, const Transform& parentTransform)
 	textArtist->drawString("Mutation: " + std::to_string(m_hotelStat->getMutationCount()),
 		8, 8 + 20 * pos++, caDraw::Color::Gray);
 
-	const auto& geneCountMap = m_hotelStat->getGeneCountMap();
-	textArtist->drawString("Gene Type: " + std::to_string(geneCountMap.size()),
+	textArtist->drawString("Longest Gene Span(Epoch): " + std::to_string(m_hotelStat->getLongestGeneEpoch()),
 		8, 8 + 20 * pos++, caDraw::Color::Gray);
-	textArtist->drawString("Length: Count",
-		64, 8 + 20 * pos++, caDraw::Color::Gray);
-	for (auto& geneStats : geneCountMap)
-	{
-		auto& gene = geneStats.first;
-		auto count = geneStats.second;
 
-		textArtist->drawString(std::to_string(gene.getLength()) + ": " + std::to_string(count),
-			64, 8 + 20 * pos++, caDraw::Color::Gray);
+	const auto& geneInfoMap = m_hotelStat->getGeneInfoMap();
+	textArtist->drawString("Gene Type: " + std::to_string(geneInfoMap.size()),
+		8, 8 + 20 * pos++, caDraw::Color::Gray);
+	textArtist->drawString("Length: Count, Max Count, First Epoch",
+		64, 8 + 20 * pos++, caDraw::Color::Gray);
+	for (const auto& geneInfo : geneInfoMap)
+	{
+		auto& gene = geneInfo.first;
+		auto& info = geneInfo.second;
+
+		// 멸종하지 않은 것만 표시.
+		if (m_bShowExtinctGene || info.firstEpoch > info.endEpoch)
+		{
+			std::ostringstream oss;
+			oss << gene.getLength() << ": ";
+			oss << info.count << ", ";
+			oss << info.maxCount << ", ";
+			oss << info.firstEpoch;
+
+			textArtist->drawString(oss.str(),
+				64, 8 + 20 * pos++, caDraw::Color::Gray);
+		}
 	}
 
 	textArtist->endDrawString();
@@ -85,5 +101,12 @@ void DrawableHotel::onDraw(Graphics& g, const Transform& parentTransform)
 void DrawableHotel::setFont(std::shared_ptr<caDraw::Font> font)
 {
 	m_font = font;
+}
+
+//###########################################################################
+
+void DrawableHotel::showExtinctGene(bool bShow)
+{
+	m_bShowExtinctGene = bShow;
 }
 

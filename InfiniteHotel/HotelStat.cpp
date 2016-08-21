@@ -4,7 +4,9 @@
 
 
 HotelStat::HotelStat()
-	: m_maxUnitCount(0)
+	: m_epoch(1)
+	
+	, m_maxUnitCount(0)
 	, m_unitCount(0)
 	, m_birth(0)
 	, m_death(0)
@@ -12,6 +14,7 @@ HotelStat::HotelStat()
 	, m_maxUnitScore(-1)
 	, m_minUnitScore(1)
 	, m_mutationCount(0)
+	, m_longestEpoch(0)
 {
 
 }
@@ -20,6 +23,8 @@ HotelStat::HotelStat()
 
 void HotelStat::reset()
 {
+	m_epoch = 1;
+
 	m_maxUnitCount = 0;
 	m_unitCount = 0;
 	m_birth = 0;
@@ -29,6 +34,14 @@ void HotelStat::reset()
 	m_minUnitScore = 1;
 	m_mutationCount = 0;
 	m_geneCount.clear();
+	m_longestEpoch = 0;
+}
+
+//###########################################################################
+
+void HotelStat::updateEpoch(size_t epoch)
+{
+	m_epoch = epoch;
 }
 
 //###########################################################################
@@ -131,12 +144,20 @@ void HotelStat::increaseGeneCount(const Gene& gene)
 
 	if (it == m_geneCount.end())
 	{
-		m_geneCount.insert(std::make_pair(gene, 1));
+		it = m_geneCount.insert(std::make_pair(gene, GeneInfo()));
+
+
+		auto& info = it->second;
+
+		info.firstEpoch = m_epoch;
 	}
-	else
-	{
-		++it->second;
-	}
+	
+	
+	auto& info = it->second;
+
+	++info.count;
+	if (info.count > info.maxCount)
+		info.maxCount = info.count;
 }
 
 
@@ -146,18 +167,32 @@ void HotelStat::decreaseGeneCount(const Gene& gene)
 
 	if (it != m_geneCount.end())
 	{
-		--it->second;
+		auto& info = it->second;
 
-		if (it->second <= 0)
+		--info.count;
+		if (info.count <= 0)
 		{
-			m_geneCount.erase(it);
+			info.count = 0;
+			info.endEpoch = m_epoch;
+
+			size_t lifespan = m_epoch - info.firstEpoch;
+			if (lifespan > m_longestEpoch)
+			{
+				m_longestEpoch = lifespan;
+			}
 		}
 	}
 }
 
 
-auto HotelStat::getGeneCountMap() const -> const GeneCountMap&
+auto HotelStat::getGeneInfoMap() const -> const GeneInfoMap&
 {
 	return m_geneCount;
+}
+
+
+size_t HotelStat::getLongestGeneEpoch() const
+{
+	return m_longestEpoch;
 }
 

@@ -23,7 +23,7 @@ Hotel::Hotel()
 	, m_epoch(1)
 	, m_time(0), m_endTime(4096)
 {
-
+	
 }
 
 
@@ -306,6 +306,9 @@ void Hotel::updateEpoch()
 {
 	// 세대 증가
 	++m_epoch;
+
+
+	m_hotelStat->updateEpoch(m_epoch);
 }
 
 

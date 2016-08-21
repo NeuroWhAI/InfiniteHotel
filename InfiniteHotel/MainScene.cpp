@@ -81,6 +81,15 @@ void MainScene::onUpdate(caDraw::Window& owner)
 		m_camera.setLocation(0, 0);
 	}
 
+	if (caKeyboard->isKeyDown(caSys::Keys::Home))
+	{
+		m_hotel->showExtinctGene(false);
+	}
+	else if (caKeyboard->isKeyDown(caSys::Keys::End))
+	{
+		m_hotel->showExtinctGene(true);
+	}
+
 
 	m_hotel->update();
 }

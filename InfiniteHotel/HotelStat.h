@@ -10,12 +10,35 @@
 
 class HotelStat
 {
-private:
-	using GeneCountMap = std::unordered_multimap<Gene, size_t, Gene::Hasher>;
+protected:
+	class GeneInfo
+	{
+	public:
+		GeneInfo()
+			: count(0)
+			, maxCount(0)
+			, firstEpoch(0)
+			, endEpoch(0)
+		{ }
+
+	public:
+		size_t count;
+		size_t maxCount;
+		size_t firstEpoch;
+		size_t endEpoch;
+	};
+
+
+public:
+	using GeneInfoMap = std::unordered_multimap<Gene, GeneInfo, Gene::Hasher>;
 
 
 public:
 	HotelStat();
+
+
+protected:
+	size_t m_epoch;
 
 
 protected:
@@ -27,11 +50,16 @@ protected:
 	double m_maxUnitScore;
 	double m_minUnitScore;
 	size_t m_mutationCount;
-	GeneCountMap m_geneCount;
+	GeneInfoMap m_geneCount;
+	size_t m_longestEpoch;
 
 
 public:
 	void reset();
+
+
+public:
+	void updateEpoch(size_t epoch);
 
 
 public:
@@ -51,6 +79,7 @@ public:
 	size_t getMutationCount() const;
 	void increaseGeneCount(const Gene& gene);
 	void decreaseGeneCount(const Gene& gene);
-	const GeneCountMap& getGeneCountMap() const;
+	const GeneInfoMap& getGeneInfoMap() const;
+	size_t getLongestGeneEpoch() const;
 };
 

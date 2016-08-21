@@ -25,10 +25,18 @@ protected:
 
 
 protected:
+	bool m_bShowExtinctGene;
+
+
+protected:
 	virtual void onDraw(Graphics& g, const Transform& parentTransform) override;
 
 
 public:
 	void setFont(std::shared_ptr<caDraw::Font> font);
+
+
+public:
+	void showExtinctGene(bool bShow);
 };
 
