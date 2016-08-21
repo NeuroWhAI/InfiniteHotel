@@ -11,7 +11,7 @@
 class HotelStat
 {
 private:
-	using GeneCountMap = std::unordered_map<Gene, size_t, Gene::Hasher>;
+	using GeneCountMap = std::unordered_multimap<Gene, size_t, Gene::Hasher>;
 
 
 public:

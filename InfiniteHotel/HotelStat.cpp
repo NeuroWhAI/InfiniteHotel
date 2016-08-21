@@ -28,6 +28,7 @@ void HotelStat::reset()
 	m_maxUnitScore = -1;
 	m_minUnitScore = 1;
 	m_mutationCount = 0;
+	m_geneCount.clear();
 }
 
 //###########################################################################
