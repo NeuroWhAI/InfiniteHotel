@@ -36,7 +36,7 @@ void MainScene::onInitialize(caDraw::Window& owner)
 	m_font->setStyle(caDraw::FontStyles::Bold);
 
 
-	m_hotel->initialize(256, 1024);
+	m_hotel->initialize(1024, 1024);
 	m_hotel->setFont(m_font);
 }
 

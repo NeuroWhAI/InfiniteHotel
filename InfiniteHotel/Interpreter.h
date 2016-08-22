@@ -16,17 +16,15 @@ public:
 
 
 public:
-	Interpreter(const std::vector<char>& code,
-		std::vector<char>& memory,
-		InterpreterListener& listener);
+	Interpreter();
 
 
 protected:
 	bool m_isEnd;
-	const std::vector<char>& m_code;
-	const size_t m_codeLength;
-	std::vector<char>& m_memory;
-	const size_t m_memoryLength;
+	const std::vector<char>* m_code;
+	size_t m_codeLength;
+	std::vector<char>* m_memory;
+	size_t m_memoryLength;
 	char m_register;
 	char m_channel;
 	size_t m_ptr;
@@ -37,7 +35,13 @@ protected:
 
 protected:
 	std::vector<bool (Interpreter::*)()> m_cmdSet;
-	InterpreterListener& m_listener;
+	InterpreterListener* m_listener;
+
+
+public:
+	void initialize(const std::vector<char>* code,
+		std::vector<char>* memory,
+		InterpreterListener* listener);
 
 
 public:

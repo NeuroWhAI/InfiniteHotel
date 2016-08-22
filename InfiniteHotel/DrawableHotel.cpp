@@ -80,7 +80,7 @@ void DrawableHotel::onDraw(Graphics& g, const Transform& parentTransform)
 		auto& info = geneInfo.second;
 
 		// 멸종하지 않은 것만 표시.
-		if (m_bShowExtinctGene || info.firstEpoch > info.endEpoch)
+		if (m_bShowExtinctGene || info.count > 0)
 		{
 			std::ostringstream oss;
 			oss << gene.getLength() << ": ";

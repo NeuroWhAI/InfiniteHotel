@@ -11,6 +11,7 @@
 class HotelStat;
 class Unit;
 class Gene;
+class UnitPool;
 
 
 class Hotel
@@ -27,6 +28,10 @@ protected:
 
 protected:
 	std::unique_ptr<HotelStat> m_hotelStat;
+
+
+protected:
+	std::unique_ptr<UnitPool> m_unitPool;
 
 
 protected:

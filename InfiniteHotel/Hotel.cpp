@@ -8,6 +8,7 @@
 #include "HotelStat.h"
 #include "Unit.h"
 #include "Gene.h"
+#include "UnitPool.h"
 
 
 
@@ -17,6 +18,8 @@ Hotel::Hotel()
 	, m_mutationDist(0, 128)
 
 	, m_hotelStat(std::make_unique<HotelStat>())
+
+	, m_unitPool(std::make_unique<UnitPool>())
 	
 	, m_worldEnergy(0)
 	, m_lockedEnergy(0)
@@ -139,7 +142,9 @@ void Hotel::updateState()
 			// 에너지 환원
 			m_lockedEnergy += room->getEnergy() + room->getUsedEnergy();
 
+
 			// 유닛 삭제
+			m_unitPool->releaseUnit(std::move(room));
 			room = nullptr;
 		}
 		else
@@ -350,8 +355,8 @@ size_t Hotel::createUnit(const Gene& gene)
 			}
 
 
-			m_roomList[r] = std::make_unique<Unit>(gene, r,
-				m_roomList);
+			m_roomList[r] = std::move(m_unitPool->acquireUnit());
+			m_roomList[r]->initialize(gene, r, &m_roomList);
 
 			
 			return r;
@@ -360,8 +365,9 @@ size_t Hotel::createUnit(const Gene& gene)
 
 
 	// 빈방이 없다면 방을 하나 만듬.
-	m_roomList.emplace_back(std::make_unique<Unit>(gene, m_roomList.size(),
-		m_roomList));
+	m_roomList.emplace_back(std::move(m_unitPool->acquireUnit()));
+	m_roomList[m_roomList.size() - 1]->initialize(gene, m_roomList.size(),
+		&m_roomList);
 
 
 	return m_roomList.size() - 1;

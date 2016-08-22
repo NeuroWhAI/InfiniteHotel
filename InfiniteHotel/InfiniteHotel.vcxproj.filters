@@ -45,6 +45,9 @@
     <ClCompile Include="HotelStat.cpp">
       <Filter>InfiniteHotel</Filter>
     </ClCompile>
+    <ClCompile Include="UnitPool.cpp">
+      <Filter>InfiniteHotel</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainScene.h">
@@ -69,6 +72,9 @@
       <Filter>InfiniteHotel</Filter>
     </ClInclude>
     <ClInclude Include="HotelStat.h">
+      <Filter>InfiniteHotel</Filter>
+    </ClInclude>
+    <ClInclude Include="UnitPool.h">
       <Filter>InfiniteHotel</Filter>
     </ClInclude>
   </ItemGroup>

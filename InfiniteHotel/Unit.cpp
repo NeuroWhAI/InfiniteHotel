@@ -6,27 +6,51 @@
 
 
 
-Unit::Unit(const Gene& gene, const size_t myIndex,
-	const std::vector<std::unique_ptr<Unit>>& roomList)
-	: m_roomList(roomList)
+Unit::Unit()
+	: m_roomList(nullptr)
 	
-	, m_gene(gene)
-	, m_energy(gene.getEnergy())
+	, m_energy(0)
 	, m_usedEnergy(0)
+	
+	, m_interpreter(std::make_unique<Interpreter>())
 
-	, m_memory(gene.getCode().size(), 0)
-
-	, m_myIndex(myIndex)
-	, m_targetUnitIndex(myIndex)
+	, m_myIndex(0)
+	, m_targetUnitIndex(0)
 	, m_inputList(1, 0)
 	, m_outputList(1, 0)
 	, m_score(0)
 	, m_nextScore(0)
 	, m_targetScore(0)
-	, m_loveUnitIndex(myIndex)
+	, m_loveUnitIndex(0)
 {
-	m_interpreter = std::make_unique<Interpreter>(m_gene.getCode(),
-		m_memory, *this);
+	
+}
+
+//###########################################################################
+
+void Unit::initialize(const Gene& gene, const size_t myIndex,
+	const std::vector<std::unique_ptr<Unit>>* roomList)
+{
+	m_roomList = roomList;
+
+	m_gene = gene;
+	m_energy = gene.getEnergy();
+	m_usedEnergy = 0;
+
+	m_memory.resize(gene.getLength(), 0);
+	m_interpreter->initialize(&m_gene.getCode(),
+		&m_memory, this);
+
+	m_myIndex = myIndex;
+	m_targetUnitIndex = myIndex;
+	m_inputList.clear();
+	m_inputList.resize(1, 0);
+	m_outputList.clear();
+	m_outputList.resize(1, 0);
+	m_score = 0;
+	m_nextScore = 0;
+	m_targetScore = 0;
+	m_loveUnitIndex = myIndex;
 }
 
 //###########################################################################
@@ -48,14 +72,17 @@ void Unit::updateInterpreter()
 
 void Unit::updateCommunication()
 {
+	const auto& roomList = *m_roomList;
+
+
 	// 점수 갱신
 	m_score = m_nextScore;
 
 	// 통신 및 평가 진행
-	if (m_targetUnitIndex < m_roomList.size()
-		&& m_roomList[m_targetUnitIndex] != nullptr)
+	if (m_targetUnitIndex < roomList.size()
+		&& roomList[m_targetUnitIndex] != nullptr)
 	{
-		auto& targetUnit = m_roomList[m_targetUnitIndex];
+		auto& targetUnit = roomList[m_targetUnitIndex];
 
 
 		// 통신
@@ -313,6 +340,9 @@ bool Unit::whenLove()
 
 bool Unit::whenReadTargetEnergy(char& outData)
 {
+	const auto& roomList = *m_roomList;
+
+
 	useEnergy(2.0);
 
 
@@ -322,10 +352,10 @@ bool Unit::whenReadTargetEnergy(char& outData)
 	outData = 0;
 
 
-	if (m_targetUnitIndex < m_roomList.size()
-		&& m_roomList[m_targetUnitIndex] != nullptr)
+	if (m_targetUnitIndex < roomList.size()
+		&& roomList[m_targetUnitIndex] != nullptr)
 	{
-		auto& targetUnit = m_roomList[m_targetUnitIndex];
+		auto& targetUnit = roomList[m_targetUnitIndex];
 
 
 		constexpr auto maxData = std::numeric_limits<char>::max();
@@ -362,6 +392,9 @@ bool Unit::whenReadTargetEnergy(char& outData)
 
 bool Unit::whenReadTargetScore(char& outData)
 {
+	const auto& roomList = *m_roomList;
+
+
 	useEnergy(2.0);
 
 
@@ -371,10 +404,10 @@ bool Unit::whenReadTargetScore(char& outData)
 	outData = 0;
 
 
-	if (m_targetUnitIndex < m_roomList.size()
-		&& m_roomList[m_targetUnitIndex] != nullptr)
+	if (m_targetUnitIndex < roomList.size()
+		&& roomList[m_targetUnitIndex] != nullptr)
 	{
-		auto& targetUnit = m_roomList[m_targetUnitIndex];
+		auto& targetUnit = roomList[m_targetUnitIndex];
 
 
 		constexpr auto maxData = std::numeric_limits<char>::max();

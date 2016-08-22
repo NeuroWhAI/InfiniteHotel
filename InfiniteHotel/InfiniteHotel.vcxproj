@@ -160,6 +160,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainScene.cpp" />
     <ClCompile Include="Unit.cpp" />
+    <ClCompile Include="UnitPool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DrawableHotel.h" />
@@ -170,6 +171,7 @@
     <ClInclude Include="InterpreterListener.h" />
     <ClInclude Include="MainScene.h" />
     <ClInclude Include="Unit.h" />
+    <ClInclude Include="UnitPool.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

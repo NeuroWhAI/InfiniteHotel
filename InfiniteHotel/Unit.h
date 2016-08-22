@@ -14,12 +14,11 @@
 class Unit : public InterpreterListener
 {
 public:
-	explicit Unit(const Gene& gene, const size_t myIndex,
-		const std::vector<std::unique_ptr<Unit>>& roomList);
+	Unit();
 
 
 protected:
-	const std::vector<std::unique_ptr<Unit>>& m_roomList;
+	const std::vector<std::unique_ptr<Unit>>* m_roomList;
 
 
 protected:
@@ -34,7 +33,7 @@ protected:
 
 
 protected:
-	const size_t m_myIndex;
+	size_t m_myIndex;
 	size_t m_targetUnitIndex;
 	std::vector<char> m_inputList;
 	std::vector<char> m_outputList;
@@ -42,6 +41,11 @@ protected:
 	double m_nextScore;
 	double m_targetScore;
 	size_t m_loveUnitIndex;
+
+
+public:
+	void initialize(const Gene& gene, const size_t myIndex,
+		const std::vector<std::unique_ptr<Unit>>* roomList);
 
 
 public:

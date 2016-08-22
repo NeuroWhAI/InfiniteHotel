@@ -50,7 +50,7 @@ protected:
 	double m_maxUnitScore;
 	double m_minUnitScore;
 	size_t m_mutationCount;
-	GeneInfoMap m_geneCount;
+	GeneInfoMap m_geneInfo;
 	size_t m_longestEpoch;
 
 

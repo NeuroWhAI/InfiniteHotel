@@ -33,7 +33,7 @@ void HotelStat::reset()
 	m_maxUnitScore = -1;
 	m_minUnitScore = 1;
 	m_mutationCount = 0;
-	m_geneCount.clear();
+	m_geneInfo.clear();
 	m_longestEpoch = 0;
 }
 
@@ -140,11 +140,11 @@ size_t HotelStat::getMutationCount() const
 
 void HotelStat::increaseGeneCount(const Gene& gene)
 {
-	auto it = m_geneCount.find(gene);
+	auto it = m_geneInfo.find(gene);
 
-	if (it == m_geneCount.end())
+	if (it == m_geneInfo.end())
 	{
-		it = m_geneCount.insert(std::make_pair(gene, GeneInfo()));
+		it = m_geneInfo.insert(std::make_pair(gene, GeneInfo()));
 
 
 		auto& info = it->second;
@@ -163,9 +163,9 @@ void HotelStat::increaseGeneCount(const Gene& gene)
 
 void HotelStat::decreaseGeneCount(const Gene& gene)
 {
-	auto it = m_geneCount.find(gene);
+	auto it = m_geneInfo.find(gene);
 
-	if (it != m_geneCount.end())
+	if (it != m_geneInfo.end())
 	{
 		auto& info = it->second;
 
@@ -187,7 +187,7 @@ void HotelStat::decreaseGeneCount(const Gene& gene)
 
 auto HotelStat::getGeneInfoMap() const -> const GeneInfoMap&
 {
-	return m_geneCount;
+	return m_geneInfo;
 }
 
 

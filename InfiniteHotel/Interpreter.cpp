@@ -7,25 +7,19 @@
 
 
 
-Interpreter::Interpreter(const std::vector<char>& code,
-	std::vector<char>& memory,
-	InterpreterListener& listener)
+Interpreter::Interpreter()
 	: m_isEnd(false)
-	, m_code(code)
-	, m_codeLength(code.size())
-	, m_memory(memory)
-	, m_memoryLength(memory.size())
+	, m_code(nullptr)
+	, m_codeLength(0)
+	, m_memory(nullptr)
+	, m_memoryLength(0)
 	, m_register(0)
 	, m_channel(0)
 	, m_ptr(0)
 	, m_head(0)
 
-	, m_listener(listener)
+	, m_listener(nullptr)
 {
-	// 코드 전처리
-	m_isEnd = !ready(code);
-
-
 	// 명령어 셋 초기화
 	size_t cmd = 0;
 	m_cmdSet.push_back(&Interpreter::increasePtr);
@@ -50,6 +44,31 @@ Interpreter::Interpreter(const std::vector<char>& code,
 
 //###########################################################################
 
+void Interpreter::initialize(const std::vector<char>* code,
+	std::vector<char>* memory,
+	InterpreterListener* listener)
+{
+	m_isEnd = false;
+	m_code = code;
+	m_codeLength = code->size();
+	m_memory = memory;
+	m_memoryLength = memory->size();
+	m_register = 0;
+	m_channel = 0;
+	m_ptr = 0;
+	m_head = 0;
+	m_getBeginBracket.clear();
+	m_getEndBracket.clear();
+
+	m_listener = listener;
+
+
+	// 코드 전처리
+	m_isEnd = !ready(*code);
+}
+
+//###########################################################################
+
 bool Interpreter::isEnd() const
 {
 	return ((m_head >= m_codeLength) || m_isEnd);
@@ -58,7 +77,7 @@ bool Interpreter::isEnd() const
 
 void Interpreter::update()
 {
-	m_isEnd = !(this->*m_cmdSet[m_code[m_head]])();
+	m_isEnd = !(this->*m_cmdSet[(*m_code)[m_head]])();
 }
 
 //###########################################################################
@@ -145,7 +164,7 @@ bool Interpreter::increasePtr()
 	}
 
 
-	return m_listener.whenIncreasePtr();
+	return m_listener->whenIncreasePtr();
 }
 
 
@@ -163,7 +182,7 @@ bool Interpreter::decreasePtr()
 	}
 
 
-	return m_listener.whenDecreasePtr();
+	return m_listener->whenDecreasePtr();
 }
 
 
@@ -171,10 +190,10 @@ bool Interpreter::increaseData()
 {
 	++m_head;
 
-	++m_memory[m_ptr];
+	++(*m_memory)[m_ptr];
 
 
-	return m_listener.whenIncreaseData();
+	return m_listener->whenIncreaseData();
 }
 
 
@@ -182,10 +201,10 @@ bool Interpreter::decreaseData()
 {
 	++m_head;
 
-	--m_memory[m_ptr];
+	--(*m_memory)[m_ptr];
 
 
-	return m_listener.whenDecreaseData();
+	return m_listener->whenDecreaseData();
 }
 
 
@@ -194,7 +213,7 @@ bool Interpreter::writeData()
 	++m_head;
 
 
-	return m_listener.whenWriteData(m_memory[m_ptr]);
+	return m_listener->whenWriteData((*m_memory)[m_ptr]);
 }
 
 
@@ -203,13 +222,13 @@ bool Interpreter::readData()
 	++m_head;
 
 
-	return m_listener.whenReadData(m_memory[m_ptr]);
+	return m_listener->whenReadData((*m_memory)[m_ptr]);
 }
 
 
 bool Interpreter::jumpIfZero()
 {
-	if (m_memory[m_ptr] == 0)
+	if ((*m_memory)[m_ptr] == 0)
 	{
 		m_head = m_getEndBracket[m_head];
 	}
@@ -219,13 +238,13 @@ bool Interpreter::jumpIfZero()
 	}
 
 
-	return m_listener.whenJumpIfZero();
+	return m_listener->whenJumpIfZero();
 }
 
 
 bool Interpreter::jumpIfNotZero()
 {
-	if (m_memory[m_ptr] != 0)
+	if ((*m_memory)[m_ptr] != 0)
 	{
 		m_head = m_getBeginBracket[m_head];
 	}
@@ -235,7 +254,7 @@ bool Interpreter::jumpIfNotZero()
 	}
 
 
-	return m_listener.whenJumpIfNotZero();
+	return m_listener->whenJumpIfNotZero();
 }
 
 
@@ -244,10 +263,10 @@ bool Interpreter::writeRegister()
 	++m_head;
 
 	auto oldReg = m_register;
-	m_register = m_memory[m_ptr];
+	m_register = (*m_memory)[m_ptr];
 
 
-	return m_listener.whenWriteRegister(m_register - oldReg);
+	return m_listener->whenWriteRegister(m_register - oldReg);
 }
 
 
@@ -255,11 +274,11 @@ bool Interpreter::readRegister()
 {
 	++m_head;
 
-	auto oldMem = m_memory[m_ptr];
-	m_memory[m_ptr] = m_register;
+	auto oldMem = (*m_memory)[m_ptr];
+	(*m_memory)[m_ptr] = m_register;
 
 
-	return m_listener.whenReadRegister(m_register - oldMem);
+	return m_listener->whenReadRegister(m_register - oldMem);
 }
 
 
@@ -268,10 +287,10 @@ bool Interpreter::writeChannel()
 	++m_head;
 
 	auto oldChannel = m_channel;
-	m_channel = m_memory[m_ptr];
+	m_channel = (*m_memory)[m_ptr];
 
 
-	return m_listener.whenWriteChannel(m_channel - oldChannel);
+	return m_listener->whenWriteChannel(m_channel - oldChannel);
 }
 
 
@@ -279,11 +298,11 @@ bool Interpreter::readChannel()
 {
 	++m_head;
 
-	auto oldMem = m_memory[m_ptr];
-	m_memory[m_ptr] = m_channel;
+	auto oldMem = (*m_memory)[m_ptr];
+	(*m_memory)[m_ptr] = m_channel;
 
 
-	return m_listener.whenReadChannel(m_channel - oldMem);
+	return m_listener->whenReadChannel(m_channel - oldMem);
 }
 
 
@@ -292,7 +311,7 @@ bool Interpreter::moveTargetLeft()
 	++m_head;
 
 
-	return m_listener.whenMoveTargetLeft();
+	return m_listener->whenMoveTargetLeft();
 }
 
 
@@ -301,7 +320,7 @@ bool Interpreter::moveTargetRight()
 	++m_head;
 
 
-	return m_listener.whenMoveTargetRight();
+	return m_listener->whenMoveTargetRight();
 }
 
 
@@ -310,7 +329,7 @@ bool Interpreter::vote()
 	++m_head;
 
 
-	return m_listener.whenVote(m_memory[m_ptr]);
+	return m_listener->whenVote((*m_memory)[m_ptr]);
 }
 
 
@@ -319,7 +338,7 @@ bool Interpreter::love()
 	++m_head;
 
 
-	return m_listener.whenLove();
+	return m_listener->whenLove();
 }
 
 
@@ -328,7 +347,7 @@ bool Interpreter::readTargetEnergy()
 	++m_head;
 
 
-	return m_listener.whenReadTargetEnergy(m_memory[m_ptr]);
+	return m_listener->whenReadTargetEnergy((*m_memory)[m_ptr]);
 }
 
 
@@ -337,6 +356,6 @@ bool Interpreter::readTargetScore()
 	++m_head;
 
 
-	return m_listener.whenReadTargetScore(m_memory[m_ptr]);
+	return m_listener->whenReadTargetScore((*m_memory)[m_ptr]);
 }
 
