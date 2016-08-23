@@ -2,6 +2,8 @@
 
 
 #include <vector>
+#include <ostream>
+#include <istream>
 
 
 
@@ -36,6 +38,13 @@ protected:
 protected:
 	std::vector<bool (Interpreter::*)()> m_cmdSet;
 	InterpreterListener* m_listener;
+
+
+public:
+	void writeTo(std::ostream& osr) const;
+	void readFrom(std::istream& isr, const std::vector<char>* code,
+		std::vector<char>* memory,
+		InterpreterListener* listener);
 
 
 public:

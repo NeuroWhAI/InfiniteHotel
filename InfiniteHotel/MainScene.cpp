@@ -1,5 +1,7 @@
 #include "MainScene.h"
 
+#include <fstream>
+
 #include "DrawableHotel.h"
 
 
@@ -36,14 +38,103 @@ void MainScene::onInitialize(caDraw::Window& owner)
 	m_font->setStyle(caDraw::FontStyles::Bold);
 
 
-	m_hotel->initialize(1024, 1024);
+	m_loadPanel = caFactory->createPanel();
+	m_loadPanel->setVisible(false);
+	m_loadPanel->size = { 534, 150 };
+	m_loadPanel->transform.position = {
+		winSize.width / 2 - m_loadPanel->size.width / 2,
+		winSize.height / 2 - m_loadPanel->size.height / 2
+	};
+	addPanel(m_loadPanel);
+
+	m_backRect = canew<caDraw::DrawableRectangle>();
+	m_backRect->setLocation(-2, -2);
+	m_backRect->setSize(m_loadPanel->size.width, m_loadPanel->size.height);
+	m_backRect->fillColor = caDraw::Color(250, 250, 250);
+	m_backRect->edgeColor = caDraw::Color(128, 128, 128, 128);
+	m_backRect->edgeWidth = 4.0f;
+
+	m_loadLabel = canew<caUI::Label>();
+	m_loadLabel->setFont(m_font);
+	m_loadLabel->setSize({ 300, 36 });
+	m_loadLabel->setPosition({ 22, 20 });
+	m_loadLabel->setText(L"기록된 정보로 시작하시겠습니까?");
+
+	m_loadButton = canew<caUI::Button>();
+	m_loadButton->setFont(m_font);
+	m_loadButton->setSize({ 128, 36 });
+	m_loadButton->setPosition({ 250, 100 });
+	m_loadButton->setText(L"예");
+	m_loadButton->WhenClick += [&hotel = m_hotel, &panel = m_loadPanel]
+	(const caUI::TouchEventArgs& args)
+	{
+		panel->setVisible(false);
+		hotel->setVisible(true);
+
+		std::ifstream fr("save.htl");
+		if (fr.is_open())
+		{
+			hotel->readFrom(fr);
+
+
+			fr.close();
+		}
+	};
+
+	m_cancelButton = canew<caUI::Button>();
+	m_cancelButton->setFont(m_font);
+	m_cancelButton->setSize({ 128, 36 });
+	m_cancelButton->setPosition({ 250 + 128 + 16, 100 });
+	m_cancelButton->setText(L"아니오");
+	m_cancelButton->WhenClick += [&hotel = m_hotel, &panel = m_loadPanel]
+	(const caUI::TouchEventArgs& args)
+	{
+		panel->setVisible(false);
+		hotel->setVisible(true);
+
+		hotel->initialize(1024, 1024);
+	};
+
+	m_loadPanel->addDrawable(m_backRect);
+
+	m_loadPanel->addDrawable(m_loadLabel);
+	m_loadPanel->addUpdatable(m_loadLabel);
+
+	m_loadPanel->addDrawable(m_loadButton);
+	m_loadPanel->addUpdatable(m_loadButton);
+
+	m_loadPanel->addDrawable(m_cancelButton);
+	m_loadPanel->addUpdatable(m_cancelButton);
+
+
+	std::ifstream fr("save.htl");
+	if (fr.is_open())
+	{
+		m_loadPanel->setVisible(true);
+		m_hotel->setVisible(false);
+
+
+		fr.close();
+	}
+	else
+	{
+		m_hotel->initialize(1024, 1024);
+	}
+
 	m_hotel->setFont(m_font);
 }
 
 
 void MainScene::onRelease()
 {
+	std::ofstream fw("save.htl");
+	if (fw.is_open())
+	{
+		m_hotel->writeTo(fw);
 
+
+		fw.close();
+	}
 }
 
 

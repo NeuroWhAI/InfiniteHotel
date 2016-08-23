@@ -20,6 +20,38 @@ Gene::Gene(const std::initializer_list<char>& list)
 
 //###########################################################################
 
+void Gene::writeTo(std::ostream& osr) const
+{
+	using std::endl;
+
+
+	osr << m_code.size() << endl;
+	for (auto& digit : m_code)
+	{
+		osr << static_cast<int>(digit) << ' ';
+	}
+	osr << endl;
+}
+
+
+void Gene::readFrom(std::istream& isr)
+{
+	size_t length = 0;
+	isr >> length;
+
+	m_code.resize(length);
+
+	for (size_t i = 0; i < length; ++i)
+	{
+		int digit = 0;
+		isr >> digit;
+
+		m_code[i] = static_cast<char>(digit);
+	}
+}
+
+//###########################################################################
+
 void Gene::initializeRandomly(std::mt19937& engine, int cmdSetCount)
 {
 	m_code.clear();

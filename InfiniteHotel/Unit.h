@@ -3,6 +3,8 @@
 
 #include <memory>
 #include <vector>
+#include <ostream>
+#include <istream>
 
 #include "InterpreterListener.h"
 #include "Gene.h"
@@ -41,6 +43,11 @@ protected:
 	double m_nextScore;
 	double m_targetScore;
 	size_t m_loveUnitIndex;
+
+
+public:
+	void writeTo(std::ostream& osr) const;
+	void readFrom(std::istream& isr, const std::vector<std::unique_ptr<Unit>>* roomList);
 
 
 public:

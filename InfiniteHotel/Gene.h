@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <random>
+#include <ostream>
+#include <istream>
 
 
 
@@ -27,6 +29,11 @@ public:
 
 protected:
 	std::vector<char> m_code;
+
+
+public:
+	void writeTo(std::ostream& osr) const;
+	void readFrom(std::istream& isr);
 
 
 public:

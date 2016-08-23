@@ -31,6 +31,14 @@ protected:
 
 
 protected:
+	std::shared_ptr<caDraw::Panel> m_loadPanel;
+	std::shared_ptr<caDraw::DrawableRectangle> m_backRect;
+	std::shared_ptr<caUI::Label> m_loadLabel;
+	std::shared_ptr<caUI::Button> m_loadButton;
+	std::shared_ptr<caUI::Button> m_cancelButton;
+
+
+protected:
 	PointF m_camera;
 	std::unique_ptr<DrawableHotel> m_hotel;
 

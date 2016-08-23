@@ -28,6 +28,113 @@ Unit::Unit()
 
 //###########################################################################
 
+void Unit::writeTo(std::ostream& osr) const
+{
+	using std::endl;
+
+
+	m_gene.writeTo(osr);
+	osr << m_energy << endl;
+	osr << m_usedEnergy << endl;
+
+
+	osr << m_memory.size() << endl;
+	for (auto& data : m_memory)
+	{
+		osr << static_cast<int>(data) << ' ';
+	}
+	osr << endl;
+
+	m_interpreter->writeTo(osr);
+
+
+	osr << m_myIndex << endl;
+	osr << m_targetUnitIndex << endl;
+
+	osr << m_inputList.size() << endl;
+	for (auto& data : m_inputList)
+	{
+		osr << static_cast<int>(data) << ' ';
+	}
+	osr << endl;
+
+	osr << m_outputList.size() << endl;
+	for (auto& data : m_outputList)
+	{
+		osr << static_cast<int>(data) << ' ';
+	}
+	osr << endl;
+
+	osr << m_score << endl;
+	osr << m_nextScore << endl;
+	osr << m_targetScore << endl;
+	osr << m_loveUnitIndex << endl;
+}
+
+
+void Unit::readFrom(std::istream& isr, const std::vector<std::unique_ptr<Unit>>* roomList)
+{
+	m_roomList = roomList;
+
+
+	m_gene.readFrom(isr);
+	isr >> m_energy;
+	isr >> m_usedEnergy;
+
+
+	size_t memSize = 0;
+	isr >> memSize;
+
+	m_memory.resize(memSize);
+
+	for (size_t i = 0; i < memSize; ++i)
+	{
+		int data = 0;
+		isr >> data;
+
+		m_memory[i] = static_cast<char>(data);
+	}
+
+	m_interpreter->readFrom(isr, &m_gene.getCode(), &m_memory, this);
+
+
+	isr >> m_myIndex;
+	isr >> m_targetUnitIndex;
+
+	size_t inputSize = 0;
+	isr >> inputSize;
+
+	m_inputList.resize(inputSize);
+
+	for (size_t i = 0; i < inputSize; ++i)
+	{
+		int data = 0;
+		isr >> data;
+
+		m_inputList[i] = static_cast<char>(data);
+	}
+
+	size_t outputSize = 0;
+	isr >> outputSize;
+
+	m_outputList.resize(outputSize);
+
+	for (size_t i = 0; i < outputSize; ++i)
+	{
+		int data = 0;
+		isr >> data;
+
+		m_outputList[i] = static_cast<char>(data);
+	}
+
+	isr >> m_score;
+	isr >> m_nextScore;
+	isr >> m_targetScore;
+	isr >> m_loveUnitIndex;
+}
+
+//###########################################################################
+
 void Unit::initialize(const Gene& gene, const size_t myIndex,
 	const std::vector<std::unique_ptr<Unit>>* roomList)
 {

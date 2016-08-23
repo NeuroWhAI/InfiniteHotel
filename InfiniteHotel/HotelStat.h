@@ -2,6 +2,8 @@
 
 
 #include <unordered_map>
+#include <ostream>
+#include <istream>
 
 #include "Gene.h"
 
@@ -52,6 +54,11 @@ protected:
 	size_t m_mutationCount;
 	GeneInfoMap m_geneInfo;
 	size_t m_longestEpoch;
+
+
+public:
+	void writeTo(std::ostream& osr) const;
+	void readFrom(std::istream& isr);
 
 
 public:

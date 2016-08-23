@@ -44,6 +44,51 @@ Interpreter::Interpreter()
 
 //###########################################################################
 
+void Interpreter::writeTo(std::ostream& osr) const
+{
+	using std::endl;
+
+
+	osr << ((m_isEnd) ? '1' : '0') << endl;
+	osr << static_cast<int>(m_register) << endl;
+	osr << static_cast<int>(m_channel) << endl;
+	osr << m_ptr << endl;
+	osr << m_head << endl;
+}
+
+
+void Interpreter::readFrom(std::istream& isr, const std::vector<char>* code,
+	std::vector<char>* memory,
+	InterpreterListener* listener)
+{
+	m_code = code;
+	m_codeLength = code->size();
+	m_memory = memory;
+	m_memoryLength = memory->size();
+	
+	ready(*code);
+
+	m_listener = listener;
+
+
+	int isEnd = 0;
+	isr >> isEnd;
+	m_isEnd = ((isEnd == 0) ? false : true);
+
+	int reg = 0;
+	isr >> reg;
+	m_register = static_cast<char>(reg);
+
+	int channel = 0;
+	isr >> channel;
+	m_channel = static_cast<char>(channel);
+
+	isr >> m_ptr;
+	isr >> m_head;
+}
+
+//###########################################################################
+
 void Interpreter::initialize(const std::vector<char>* code,
 	std::vector<char>* memory,
 	InterpreterListener* listener)

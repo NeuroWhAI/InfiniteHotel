@@ -34,6 +34,98 @@ Hotel::~Hotel() = default;
 
 //###########################################################################
 
+void Hotel::writeTo(std::ostream& osr) const
+{
+	using std::endl;
+
+
+	m_hotelStat->writeTo(osr);
+
+
+	osr << m_worldEnergy << endl;
+	osr << m_lockedEnergy << endl;
+
+	osr << m_roomList.size() << endl;
+	for (const auto& room : m_roomList)
+	{
+		if (room == nullptr)
+		{
+			osr << '0' << endl;
+		}
+		else
+		{
+			osr << '1' << endl;
+
+			room->writeTo(osr);
+		}
+	}
+
+	osr << m_epoch << endl;
+	osr << m_time << ' ' << m_endTime << endl;
+
+
+	osr << m_scoreRanking.size() << endl;
+	for (const auto& index : m_scoreRanking)
+	{
+		osr << index << ' ';
+	}
+	osr << endl;
+}
+
+
+void Hotel::readFrom(std::istream& isr)
+{
+	m_roomList.clear();
+	m_scoreRanking.clear();
+
+
+	m_hotelStat->readFrom(isr);
+
+
+	isr >> m_worldEnergy;
+	isr >> m_lockedEnergy;
+
+	size_t roomCount = 0;
+	isr >> roomCount;
+
+	for (size_t i = 0; i < roomCount; ++i)
+	{
+		int isExists = 0;
+		isr >> isExists;
+
+		if (isExists == 0)
+		{
+			m_roomList.emplace_back(nullptr);
+		}
+		else
+		{
+			auto unit = m_unitPool->acquireUnit();
+			unit->readFrom(isr, &m_roomList);
+
+			m_roomList.emplace_back(std::move(unit));
+		}
+	}
+
+	isr >> m_epoch;
+	isr >> m_time >> m_endTime;
+
+
+	size_t scoreRankSize = 0;
+	isr >> scoreRankSize;
+
+	m_scoreRanking.resize(scoreRankSize);
+
+	for (size_t i = 0; i < scoreRankSize; ++i)
+	{
+		size_t index = 0;
+		isr >> index;
+
+		m_scoreRanking[i] = index;
+	}
+}
+
+//###########################################################################
+
 void Hotel::initialize(size_t firstUnitCount, size_t timePerEpoch)
 {
 	m_hotelStat->reset();
@@ -355,7 +447,7 @@ size_t Hotel::createUnit(const Gene& gene)
 			}
 
 
-			m_roomList[r] = std::move(m_unitPool->acquireUnit());
+			m_roomList[r] = m_unitPool->acquireUnit();
 			m_roomList[r]->initialize(gene, r, &m_roomList);
 
 			
@@ -365,7 +457,7 @@ size_t Hotel::createUnit(const Gene& gene)
 
 
 	// 빈방이 없다면 방을 하나 만듬.
-	m_roomList.emplace_back(std::move(m_unitPool->acquireUnit()));
+	m_roomList.emplace_back(m_unitPool->acquireUnit());
 	m_roomList[m_roomList.size() - 1]->initialize(gene, m_roomList.size(),
 		&m_roomList);
 

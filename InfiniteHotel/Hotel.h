@@ -4,6 +4,8 @@
 #include <memory>
 #include <vector>
 #include <random>
+#include <ostream>
+#include <istream>
 
 
 
@@ -44,6 +46,11 @@ protected:
 
 protected:
 	std::vector<size_t> m_scoreRanking;
+
+
+public:
+	void writeTo(std::ostream& osr) const;
+	void readFrom(std::istream& isr);
 
 
 public:

@@ -21,6 +21,80 @@ HotelStat::HotelStat()
 
 //###########################################################################
 
+void HotelStat::writeTo(std::ostream& osr) const
+{
+	using std::endl;
+
+
+	osr << m_epoch << endl;
+
+
+	osr << m_maxUnitCount << endl;
+	osr << m_unitCount << endl;
+	osr << m_birth << endl;
+	osr << m_death << endl;
+	osr << m_maxUnitEnergy << endl;
+	osr << m_maxUnitScore << endl;
+	osr << m_minUnitScore << endl;
+	osr << m_mutationCount << endl;
+
+	osr << m_geneInfo.size() << endl;
+	for (const auto& geneInfo : m_geneInfo)
+	{
+		auto& gene = geneInfo.first;
+		auto& info = geneInfo.second;
+
+		gene.writeTo(osr);
+
+		osr << info.count << endl;
+		osr << info.maxCount << endl;
+		osr << info.firstEpoch << endl;
+		osr << info.endEpoch << endl;
+	}
+
+	osr << m_longestEpoch << endl;
+}
+
+
+void HotelStat::readFrom(std::istream& isr)
+{
+	m_geneInfo.clear();
+
+
+	isr >> m_epoch;
+
+
+	isr >> m_maxUnitCount;
+	isr >> m_unitCount;
+	isr >> m_birth;
+	isr >> m_death;
+	isr >> m_maxUnitEnergy;
+	isr >> m_maxUnitScore;
+	isr >> m_minUnitScore;
+	isr >> m_mutationCount;
+
+	size_t infoCount = 0;
+	isr >> infoCount;
+
+	for (size_t i = 0; i < infoCount; ++i)
+	{
+		Gene gene;
+		gene.readFrom(isr);
+
+		GeneInfo info;
+		isr >> info.count;
+		isr >> info.maxCount;
+		isr >> info.firstEpoch;
+		isr >> info.endEpoch;
+
+		m_geneInfo.insert(std::make_pair(std::move(gene), info));
+	}
+
+	isr >> m_longestEpoch;
+}
+
+//###########################################################################
+
 void HotelStat::reset()
 {
 	m_epoch = 1;
