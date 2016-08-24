@@ -254,6 +254,12 @@ void HotelStat::decreaseGeneCount(const Gene& gene)
 			{
 				m_longestEpoch = lifespan;
 			}
+
+			// 유전자를 저장할 가치가 없으면 파기한다.
+			if (info.maxCount <= 1)
+			{
+				m_geneInfo.erase(it);
+			}
 		}
 	}
 }
