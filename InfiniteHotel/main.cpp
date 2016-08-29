@@ -35,7 +35,8 @@ int main()
 			window->exit();
 
 
-		if (caKeyboard->isKeyDown(caSys::Keys::Tab))
+		if (caKeyboard->isKeyPressed(caSys::Keys::LShift)
+			&& caKeyboard->isKeyDown(caSys::Keys::Tab))
 		{
 			bDraw = !bDraw;
 		}

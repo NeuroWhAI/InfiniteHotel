@@ -143,10 +143,21 @@ void MainScene::onUpdate(caDraw::Window& owner)
 	m_beginTime = system_clock::now();
 
 
-	if (caKeyboard->isKeyPressed(caSys::Keys::LShift)
-		&& caKeyboard->isKeyDown(caSys::Keys::Escape))
+	if (caKeyboard->isKeyPressed(caSys::Keys::LShift))
 	{
-		reserveNextScene(nullptr);
+		if (caKeyboard->isKeyDown(caSys::Keys::Escape))
+		{
+			reserveNextScene(nullptr);
+		}
+
+		if (caKeyboard->isKeyDown(caSys::Keys::Home))
+		{
+			m_hotel->showExtinctGene(false);
+		}
+		else if (caKeyboard->isKeyDown(caSys::Keys::End))
+		{
+			m_hotel->showExtinctGene(true);
+		}
 	}
 
 	if (caKeyboard->isKeyPressed(caSys::Keys::Up))
@@ -170,15 +181,6 @@ void MainScene::onUpdate(caDraw::Window& owner)
 	if (caKeyboard->isKeyPressed(caSys::Keys::Space))
 	{
 		m_camera.setLocation(0, 0);
-	}
-
-	if (caKeyboard->isKeyDown(caSys::Keys::Home))
-	{
-		m_hotel->showExtinctGene(false);
-	}
-	else if (caKeyboard->isKeyDown(caSys::Keys::End))
-	{
-		m_hotel->showExtinctGene(true);
 	}
 
 
