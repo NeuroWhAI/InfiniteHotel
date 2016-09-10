@@ -12,7 +12,7 @@ int main()
 
 
 	auto window = caFactory->createWindow();
-	window->create(caDraw::Size(1280, 960), caUtil::String("Infinite Hotel"));
+	window->create(caDraw::Size(1280, 960), caUtil::String("Infinite Hotel"), false);
 	window->disableFramerate();
 
 
