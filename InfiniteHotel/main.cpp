@@ -16,8 +16,10 @@ int main()
 	window->disableFramerate();
 
 
+	auto mainScene = canew<MainScene>();
+
 	auto sceneManager = canew<caUtil::SceneManager>();
-	sceneManager->replaceScene(*window, canew<MainScene>());
+	sceneManager->replaceScene(*window, mainScene);
 
 	window->setSceneManager(sceneManager);
 
@@ -39,6 +41,7 @@ int main()
 			&& caKeyboard->isKeyDown(caSys::Keys::Tab))
 		{
 			bDraw = !bDraw;
+			mainScene->enable(bDraw);
 		}
 
 

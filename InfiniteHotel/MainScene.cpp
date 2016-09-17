@@ -45,7 +45,7 @@ void MainScene::onInitialize(caDraw::Window& owner)
 	m_feedEnergyButton->WhenClick += [&hotel = m_hotel]
 	(const caUI::TouchEventArgs& args)
 	{
-		hotel->addEnergy(1000.0);
+		hotel->addEnergy(10000.0);
 	};
 
 	m_takeEnergyButton = canew<caUI::Button>();
@@ -56,7 +56,7 @@ void MainScene::onInitialize(caDraw::Window& owner)
 	m_takeEnergyButton->WhenClick += [&hotel = m_hotel]
 	(const caUI::TouchEventArgs& args)
 	{
-		hotel->addEnergy(-1000.0);
+		hotel->addEnergy(-10000.0);
 	};
 
 	m_panel->addDrawable(m_feedEnergyButton);
