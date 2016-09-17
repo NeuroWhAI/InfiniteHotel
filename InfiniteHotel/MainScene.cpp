@@ -37,6 +37,34 @@ void MainScene::onInitialize(caDraw::Window& owner)
 	m_font->setCharacterSize(18);
 	m_font->setStyle(caDraw::FontStyles::Bold);
 
+	m_feedEnergyButton = canew<caUI::Button>();
+	m_feedEnergyButton->setFont(m_font);
+	m_feedEnergyButton->setSize({ 128, 36 });
+	m_feedEnergyButton->setPosition({ 8, (float)winSize.height - 36 - 8 });
+	m_feedEnergyButton->setText(L"에너지 증가");
+	m_feedEnergyButton->WhenClick += [&hotel = m_hotel]
+	(const caUI::TouchEventArgs& args)
+	{
+		hotel->addEnergy(1000.0);
+	};
+
+	m_takeEnergyButton = canew<caUI::Button>();
+	m_takeEnergyButton->setFont(m_font);
+	m_takeEnergyButton->setSize({ 128, 36 });
+	m_takeEnergyButton->setPosition({ 8 + 128 + 8, (float)winSize.height - 36 - 8 });
+	m_takeEnergyButton->setText(L"에너지 감소");
+	m_takeEnergyButton->WhenClick += [&hotel = m_hotel]
+	(const caUI::TouchEventArgs& args)
+	{
+		hotel->addEnergy(-1000.0);
+	};
+
+	m_panel->addDrawable(m_feedEnergyButton);
+	m_panel->addUpdatable(m_feedEnergyButton);
+
+	m_panel->addDrawable(m_takeEnergyButton);
+	m_panel->addUpdatable(m_takeEnergyButton);
+
 
 	m_loadPanel = caFactory->createPanel();
 	m_loadPanel->setVisible(false);
@@ -215,5 +243,13 @@ void MainScene::onDrawFront(caDraw::Graphics& g)
 		8, 8, caDraw::Color::Red);
 
 	textArtist->endDrawString();
+}
+
+//###########################################################################
+
+void MainScene::enable(bool bEnable)
+{
+	m_feedEnergyButton->setEnabled(bEnable);
+	m_takeEnergyButton->setEnabled(bEnable);
 }
 

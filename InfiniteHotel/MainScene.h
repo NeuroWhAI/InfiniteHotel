@@ -28,6 +28,8 @@ public:
 protected:
 	std::shared_ptr<caDraw::Panel> m_panel;
 	std::shared_ptr<caDraw::Font> m_font;
+	std::shared_ptr<caUI::Button> m_feedEnergyButton;
+	std::shared_ptr<caUI::Button> m_takeEnergyButton;
 
 
 protected:
@@ -53,5 +55,9 @@ public:
 	virtual void onUpdate(caDraw::Window& owner) override;
 	virtual void onDrawBack(caDraw::Graphics& g) override;
 	virtual void onDrawFront(caDraw::Graphics& g) override;
+
+
+public:
+	void enable(bool bEnable);
 };
 

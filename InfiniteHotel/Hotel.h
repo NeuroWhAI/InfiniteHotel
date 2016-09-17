@@ -70,5 +70,9 @@ protected:
 
 protected:
 	size_t createUnit(const Gene& gene);
+
+
+public:
+	void addEnergy(double energy);
 };
 

@@ -465,3 +465,10 @@ size_t Hotel::createUnit(const Gene& gene)
 	return m_roomList.size() - 1;
 }
 
+//###########################################################################
+
+void Hotel::addEnergy(double energy)
+{
+	m_worldEnergy += energy;
+}
+
