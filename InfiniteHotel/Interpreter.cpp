@@ -21,7 +21,6 @@ Interpreter::Interpreter()
 	, m_listener(nullptr)
 {
 	// 명령어 셋 초기화
-	size_t cmd = 0;
 	m_cmdSet.push_back(&Interpreter::increasePtr);
 	m_cmdSet.push_back(&Interpreter::decreasePtr);
 	m_cmdSet.push_back(&Interpreter::increaseData);

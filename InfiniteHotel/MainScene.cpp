@@ -45,7 +45,10 @@ void MainScene::onInitialize(caDraw::Window& owner)
 	m_feedEnergyButton->WhenClick += [&hotel = m_hotel]
 	(const caUI::TouchEventArgs& args)
 	{
-		hotel->addEnergy(10000.0);
+		if(caKeyboard->isKeyPressed(caSys::Keys::LShift))
+			hotel->addEnergy(1000000.0);
+		else
+			hotel->addEnergy(100000.0);
 	};
 
 	m_takeEnergyButton = canew<caUI::Button>();
@@ -56,7 +59,10 @@ void MainScene::onInitialize(caDraw::Window& owner)
 	m_takeEnergyButton->WhenClick += [&hotel = m_hotel]
 	(const caUI::TouchEventArgs& args)
 	{
-		hotel->addEnergy(-10000.0);
+		if (caKeyboard->isKeyPressed(caSys::Keys::LShift))
+			hotel->addEnergy(-1000000.0);
+		else
+			hotel->addEnergy(-100000.0);
 	};
 
 	m_panel->addDrawable(m_feedEnergyButton);

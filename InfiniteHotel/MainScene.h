@@ -26,18 +26,18 @@ public:
 
 
 protected:
-	std::shared_ptr<caDraw::Panel> m_panel;
-	std::shared_ptr<caDraw::Font> m_font;
-	std::shared_ptr<caUI::Button> m_feedEnergyButton;
-	std::shared_ptr<caUI::Button> m_takeEnergyButton;
+	caDraw::PanelPtr m_panel;
+	caDraw::FontPtr m_font;
+	caUI::ButtonPtr m_feedEnergyButton;
+	caUI::ButtonPtr m_takeEnergyButton;
 
 
 protected:
-	std::shared_ptr<caDraw::Panel> m_loadPanel;
-	std::shared_ptr<caDraw::DrawableRectangle> m_backRect;
-	std::shared_ptr<caUI::Label> m_loadLabel;
-	std::shared_ptr<caUI::Button> m_loadButton;
-	std::shared_ptr<caUI::Button> m_cancelButton;
+	caDraw::PanelPtr m_loadPanel;
+	caDraw::DrawableRectanglePtr m_backRect;
+	caUI::LabelPtr m_loadLabel;
+	caUI::ButtonPtr m_loadButton;
+	caUI::ButtonPtr m_cancelButton;
 
 
 protected:
